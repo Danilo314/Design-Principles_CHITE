@@ -1,0 +1,30 @@
+# render.yml
+
+services:
+  - type: web
+    name: cost-calculator-web
+    runtime: python
+    python:
+      version: "3.10.6"
+    buildCommand: |
+      pip install -r requirements.txt
+    startCommand: |
+      gunicorn main:app --worker-class uvicorn.workers.UvicornWorker
+    envVars:
+      - key: PYTHONPATH
+        value: /opt/render/project/src
+    healthCheckPath: /health
+    autoDeploy: yes
+
+  - type: worker
+    name: cost-calculator-worker
+    runtime: python
+    python:
+      version: "3.10.6"
+    buildCommand: |
+      pip install -r requirements.txt
+    startCommand: |
+      python -m src.worker
+    envVars:
+      - key: PYTHONPATH
+        value: /opt/render/project/src
